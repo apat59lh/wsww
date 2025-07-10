@@ -8,7 +8,7 @@ function App() {
 
   const handleSearch = async () => {
     try {
-      const url = 'https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_TMDB_API_KEY}&query=${query}';
+      const url = `https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_TMDB_API_KEY}&query=${query}`;
   
       const response = await fetch(url);
       const data = await response.json();
@@ -29,9 +29,6 @@ function App() {
     }
   };
 
-  const testUrl = 'https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_TMDB_API_KEY}&query=office';
-  console.log("URL being used:", testUrl);
-
   return (
     <div style={{ padding: "2rem" }}>
       <h1>What Should We Watch?</h1>
@@ -43,12 +40,59 @@ function App() {
       />
       <button onClick={handleSearch}>Search</button>
 
-      <ul>
-        {results.map((item) => (
-          <li key={item.id}>
-            {item.title || item.name} ({item.first_air_date?.slice(0, 4) || item.release_date?.slice(0,4)})
-          </li>
-        ))}
+      <ul style={{ listStyle: "none", padding: 0}}>
+        {results.map((item) => {
+          const posterUrl = item.poster_path
+          ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
+          : null; 
+
+          return (
+            <li 
+              key={item.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "1rem",
+                gap: "1rem",
+              }}
+            >
+              {posterUrl ? (
+                <img
+                  src={posterUrl}
+                  alt={item.title || item.name}
+                  style={{ width: "80px", borderRadius: "5px"}}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: "80px",
+                    height: "120px",
+                    backgroundColor: "#ccc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.7rem",
+                    borderRadius: "5px",
+                    color: "#666",
+                  }}
+                >
+                  No image
+                </div>
+              )}
+
+              <div>
+                <strong>{item.title || item.name}</strong>{" "}
+                <span>
+                  (
+                  {item.first_air_date?.slice(0, 4) ||
+                    item.release_date?.slice(0, 4) ||
+                    "N/A"}
+                  )
+                </span>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
