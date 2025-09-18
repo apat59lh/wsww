@@ -4,7 +4,7 @@ import OnboardingMovies from "./onboarding/MovieOnboarding";
 import OnboardingShows from "./onboarding/ShowOnboarding";
 import MovieRanking from "./rankings/MovieRanking";
 import ShowRanking from "./rankings/ShowRanking";
-import Home from "./HomePage";
+import Dashboard from "./dashboard/Dashboard";
 
 export default function App() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function App() {
       <Route path="/onboarding/movies/ranking" element={<MovieRanking />} />
       <Route path="/onboarding/shows" element={<OnboardingShows />} />
       <Route path="/onboarding/shows/ranking" element={<ShowRanking />} />
-      <Route path="/home" element={<Home />} />
+      <Route path="/home" element={<Dashboard />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
