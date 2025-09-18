@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
-import OnboardingMovies from "./MovieOnboarding";
-import OnboardingShows from "./ShowOnboarding";
+import OnboardingMovies from "./onboarding/MovieOnboarding";
+import OnboardingShows from "./onboarding/ShowOnboarding";
+import MovieRanking from "./rankings/MovieRanking";
+import ShowRanking from "./rankings/ShowRanking";
 import Home from "./HomePage";
 
 export default function App() {
@@ -21,7 +23,9 @@ export default function App() {
   return (
     <Routes>
       <Route path="/onboarding/movies" element={<OnboardingMovies />} />
+      <Route path="/onboarding/movies/ranking" element={<MovieRanking />} />
       <Route path="/onboarding/shows" element={<OnboardingShows />} />
+      <Route path="/onboarding/shows/ranking" element={<ShowRanking />} />
       <Route path="/home" element={<Home />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

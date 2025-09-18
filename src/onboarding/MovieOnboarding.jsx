@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function OnboardingShows() {
+export default function OnboardingMovies() {
   const navigate = useNavigate();
 
   const API_KEY =
@@ -15,23 +15,23 @@ export default function OnboardingShows() {
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("showFavorites") || "[]");
+      return JSON.parse(localStorage.getItem("movieFavorites") || "[]");
     } catch {
       return [];
     }
   });
 
   const selectedIds = useMemo(() => new Set(selected.map(s => s.id)), [selected]);
-  const canFinish = selected.length >= MIN && selected.length <= MAX;
+  const canContinue = selected.length >= MIN && selected.length <= MAX;
 
-  const searchShows = async () => {
+  const searchMovies = async () => {
     if (!API_KEY) {
       alert("Missing TMDB API key. Set VITE_TMDB_API_KEY or REACT_APP_TMDB_API_KEY.");
       return;
     }
-    const url = `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
       query.trim()
-    )}&language=en-US&page=1`;
+    )}&include_adult=false&language=en-US&page=1`;
     const res = await fetch(url);
     const data = await res.json();
     setResults(Array.isArray(data.results) ? data.results : []);
@@ -48,27 +48,21 @@ export default function OnboardingShows() {
         ...prev,
         {
           id: item.id,
-          title: item.name,
+          title: item.title,
           poster_path: item.poster_path,
-          year: (item.first_air_date || "").slice(0, 4)
+          year: (item.release_date || "").slice(0, 4)
         }
       ];
     });
   };
 
   useEffect(() => {
-    localStorage.setItem("showFavorites", JSON.stringify(selected));
+    localStorage.setItem("movieFavorites", JSON.stringify(selected));
   }, [selected]);
-
-  const finish = () => {
-    if (!canFinish) return;
-    localStorage.setItem("hasOnboarded", "true");
-    navigate("/home");
-  };
 
   return (
     <div style={{ padding: "2rem", maxWidth: 1000, margin: "0 auto" }}>
-      <h1 style={{ marginBottom: 8 }}>Step 2: Pick {MIN}–{MAX} shows</h1>
+      <h1 style={{ marginBottom: 8 }}>Step 1: Pick {MIN}–{MAX} movies</h1>
       <p style={{ color: "#555", marginBottom: 16 }}>
         Search and select your favorites. Click again to unselect. ({selected.length}/{MAX})
       </p>
@@ -77,11 +71,11 @@ export default function OnboardingShows() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search TV shows (e.g., The Office)"
+          placeholder="Search movies (e.g., Interstellar)"
           style={{ flex: 1, padding: "0.6rem", border: "1px solid #ddd", borderRadius: 8 }}
-          onKeyDown={(e) => { if (e.key === "Enter") searchShows(); }}
+          onKeyDown={(e) => { if (e.key === "Enter") searchMovies(); }}
         />
-        <button onClick={searchShows} style={{ padding: "0.6rem 1rem", borderRadius: 8 }}>
+        <button onClick={searchMovies} style={{ padding: "0.6rem 1rem", borderRadius: 8 }}>
           Search
         </button>
       </div>
@@ -94,13 +88,13 @@ export default function OnboardingShows() {
           marginBottom: 16
         }}
       >
-        {results.map((tv) => {
-          const posterUrl = tv.poster_path ? `https://image.tmdb.org/t/p/w200${tv.poster_path}` : null;
-          const isSelected = selectedIds.has(tv.id);
+        {results.map((m) => {
+          const posterUrl = m.poster_path ? `https://image.tmdb.org/t/p/w200${m.poster_path}` : null;
+          const isSelected = selectedIds.has(m.id);
           return (
             <button
-              key={tv.id}
-              onClick={() => toggle(tv)}
+              key={m.id}
+              onClick={() => toggle(m)}
               style={{
                 textAlign: "left",
                 border: isSelected ? "2px solid #4f46e5" : "1px solid #e5e7eb",
@@ -111,7 +105,7 @@ export default function OnboardingShows() {
               }}
             >
               {posterUrl ? (
-                <img src={posterUrl} alt={tv.name} style={{ width: "100%", borderRadius: 8 }} />
+                <img src={posterUrl} alt={m.title} style={{ width: "100%", borderRadius: 8 }} />
               ) : (
                 <div
                   style={{
@@ -128,8 +122,8 @@ export default function OnboardingShows() {
                 </div>
               )}
               <div style={{ marginTop: 6 }}>
-                <div style={{ fontWeight: 600, fontSize: 14 }}>{tv.name}</div>
-                <div style={{ color: "#666", fontSize: 12 }}>{(tv.first_air_date || "N/A").slice(0, 4)}</div>
+                <div style={{ fontWeight: 600, fontSize: 14 }}>{m.title}</div>
+                <div style={{ color: "#666", fontSize: 12 }}>{(m.release_date || "N/A").slice(0, 4)}</div>
               </div>
             </button>
           );
@@ -151,16 +145,16 @@ export default function OnboardingShows() {
 
       <div style={{ textAlign: "center", marginTop: 12 }}>
         <button
-          disabled={!canFinish}
-          onClick={finish}
+          disabled={!canContinue}
+          onClick={() => navigate("/onboarding/movies/ranking")}
           style={{
             padding: "0.7rem 1.2rem",
             borderRadius: 10,
-            opacity: canFinish ? 1 : 0.5,
-            cursor: canFinish ? "pointer" : "not-allowed"
+            opacity: canContinue ? 1 : 0.5,
+            cursor: canContinue ? "pointer" : "not-allowed"
           }}
         >
-          Finish onboarding →
+          Continue to shows →
         </button>
       </div>
     </div>
