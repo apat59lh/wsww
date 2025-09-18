@@ -154,7 +154,7 @@ export default function OnboardingMovies() {
             cursor: canContinue ? "pointer" : "not-allowed"
           }}
         >
-          Continue to shows →
+          Continue to rankings →
         </button>
       </div>
     </div>

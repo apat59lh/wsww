@@ -188,7 +188,7 @@ export default function OnboardingShows() {
             cursor: canFinish ? "pointer" : "not-allowed",
           }}
         >
-          Continue to ranking →
+          Continue to rankings →
         </button>
       </div>
     </div>

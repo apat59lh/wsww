@@ -20,7 +20,7 @@ export default function ShowRanking() {
     const K = 32; // K-factor for rating changes
     const expectedWinner = calculateExpectedScore(winnerRating, loserRating);
     const expectedLoser = calculateExpectedScore(loserRating, winnerRating);
-    
+
     let actualWinner, actualLoser;
     if (isDraw) {
       actualWinner = actualLoser = 0.5; // Draw
@@ -28,31 +28,37 @@ export default function ShowRanking() {
       actualWinner = 1;
       actualLoser = 0;
     }
-    
+
     const newWinnerRating = winnerRating + K * (actualWinner - expectedWinner);
     const newLoserRating = loserRating + K * (actualLoser - expectedLoser);
-    
+
     return [Math.round(newWinnerRating), Math.round(newLoserRating)];
   };
 
   const convertEloToDisplayRating = (eloRating) => {
-    // Convert ELO (roughly 800-1200 range) to 0-10 scale
-    const minElo = 600;
-    const maxElo = 1400;
-    const normalized = Math.max(0, Math.min(1, (eloRating - minElo) / (maxElo - minElo)));
-    return Math.round(normalized * 100) / 10; // Round to 1 decimal place
+    // 1000 ELO = 7/10 (good), since these are pre-selected favorites
+    const baselineElo = 1000; // This represents "7/10 quality"
+    const baselineRating = 9.0;
+
+    const ratingChange = ((eloRating - baselineElo) / 400) * 3; // Scale factor
+    return Math.max(
+      0,
+      Math.min(10, Math.round((baselineRating + ratingChange) * 10) / 10)
+    );
   };
 
   useEffect(() => {
     // Load selected shows from localStorage
-    const savedShows = JSON.parse(localStorage.getItem("showFavorites") || "[]");
+    const savedShows = JSON.parse(
+      localStorage.getItem("showFavorites") || "[]"
+    );
     if (savedShows.length === 0) {
       navigate("/onboarding/shows");
       return;
     }
 
     setShows(savedShows);
-    
+
     // Generate all possible matchups (round-robin)
     const matchups = [];
     for (let i = 0; i < savedShows.length; i++) {
@@ -60,7 +66,7 @@ export default function ShowRanking() {
         matchups.push([savedShows[i], savedShows[j]]);
       }
     }
-    
+
     // Shuffle matchups for variety
     const shuffledMatchups = matchups.sort(() => Math.random() - 0.5);
     setAllMatchups(shuffledMatchups);
@@ -68,7 +74,7 @@ export default function ShowRanking() {
 
     // Initialize ELO ratings - everyone starts at 1000
     const initialRatings = {};
-    savedShows.forEach(show => {
+    savedShows.forEach((show) => {
       initialRatings[show.id] = 1000;
     });
     setEloRatings(initialRatings);
