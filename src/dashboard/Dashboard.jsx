@@ -595,11 +595,25 @@ const generateRecommendations = async () => {
             border: "2px dashed #d1d5db",
           }}
         >
-          <p>🚧 Smart recommendations based on your ratings coming soon!</p>
-          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem" }}>
-            We'll analyze your preferences to suggest new movies and shows
-            you'll love.
-          </p>
+        <div>
+          {loading ? (
+            <p>✨ Analyzing your favorites...</p>
+          ) : recommendations.length > 0 ? (
+          <div>
+            {recommendations.map((r) => (
+            <div key={r.title}>
+              <h4>{r.title}</h4>
+              <p>{r.reason}</p>
+          </div>
+        ))}
+        </div>
+      ) : (
+      <button onClick={generateRecommendations}>
+          Generate Smart Recommendations
+      </button>
+      )}
+      </div>
+
         </div>
       </div>
 
