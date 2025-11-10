@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [tournamentState, setTournamentState] = useState(null); // null, or tournament object
   const [currentMatchup, setCurrentMatchup] = useState(null);
   const [matchupIndex, setMatchupIndex] = useState(0);
-  const [tournamentResults, setTournamentResults] = useState({});
+  const [_tournamentResults, _setTournamentResults] = useState({});
   const [toughDecisionUsed, setToughDecisionUsed] = useState(false);
   const [showResults, setShowResults] = useState(null); // null or results object
 
