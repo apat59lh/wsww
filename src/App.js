@@ -11,14 +11,20 @@ export default function App() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const hasOnboarded = localStorage.getItem("hasOnboarded") === "true";
-    if (hasOnboarded && pathname.startsWith("/onboarding")) {
-      navigate("/home", { replace: true });
-    }
-    if (!hasOnboarded && pathname === "/") {
+  const hasOnboarded = localStorage.getItem("hasOnboarded") === "true";
+
+  // If no onboarding flag yet, go straight to onboarding
+  if (!hasOnboarded) {
+    if (!pathname.startsWith("/onboarding")) {
       navigate("/onboarding/movies", { replace: true });
     }
-  }, [pathname, navigate]);
+    return;
+  }
+
+  if (hasOnboarded && (pathname === "/" || pathname.startsWith("/onboarding"))) {
+    navigate("/home", { replace: true });
+  }
+}, [pathname, navigate]);
 
   return (
     <Routes>
