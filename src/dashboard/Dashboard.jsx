@@ -16,6 +16,33 @@ export default function Dashboard() {
   const [toughDecisionUsed, setToughDecisionUsed] = useState(false);
   const [showResults, setShowResults] = useState(null); // null or results object
 
+const [recommendations, setRecommendations] = useState([]);
+const [loading, setLoading] = useState(false);
+
+const generateRecommendations = async () => {
+  setLoading(true);
+  try {
+    const favorites = [
+      ...movieRankings.map((m) => ({ title: m.title, type: "movie" })),
+      ...showRankings.map((s) => ({ title: s.title, type: "tv" })),
+    ];
+
+    const res = await fetch("/api/recommendations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ favorites }),
+    });
+
+    const data = await res.json();
+    setRecommendations(data.recommendations || []);
+  } catch (err) {
+    console.error("Error fetching recommendations:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
   // ELO calculation functions
   const calculateExpectedScore = (ratingA, ratingB) => {
     return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
