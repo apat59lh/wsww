@@ -60,12 +60,6 @@ export default function OnboardingShows() {
     localStorage.setItem("showFavorites", JSON.stringify(selected));
   }, [selected]);
 
-  const finish = () => {
-    if (!canFinish) return;
-    localStorage.setItem("hasOnboarded", "true");
-    navigate("/home");
-  };
-
   return (
     <div style={{ padding: "2rem", maxWidth: 1000, margin: "0 auto" }}>
       <h1 style={{ marginBottom: 8 }}>

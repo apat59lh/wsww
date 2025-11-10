@@ -12,9 +12,36 @@ export default function Dashboard() {
   const [tournamentState, setTournamentState] = useState(null); // null, or tournament object
   const [currentMatchup, setCurrentMatchup] = useState(null);
   const [matchupIndex, setMatchupIndex] = useState(0);
-  const [tournamentResults, setTournamentResults] = useState({});
+  const [, setTournamentResults] = useState({});
   const [toughDecisionUsed, setToughDecisionUsed] = useState(false);
   const [showResults, setShowResults] = useState(null); // null or results object
+
+const [recommendations, setRecommendations] = useState([]);
+const [loading, setLoading] = useState(false);
+
+const generateRecommendations = async () => {
+  setLoading(true);
+  try {
+    const favorites = [
+      ...movieRankings.map((m) => ({ title: m.title, type: "movie" })),
+      ...showRankings.map((s) => ({ title: s.title, type: "tv" })),
+    ];
+
+    const res = await fetch("/api/recommendations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ favorites }),
+    });
+
+    const data = await res.json();
+    setRecommendations(data.recommendations || []);
+  } catch (err) {
+    console.error("Error fetching recommendations:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // ELO calculation functions
   const calculateExpectedScore = (ratingA, ratingB) => {
@@ -568,11 +595,25 @@ export default function Dashboard() {
             border: "2px dashed #d1d5db",
           }}
         >
-          <p>🚧 Smart recommendations based on your ratings coming soon!</p>
-          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem" }}>
-            We'll analyze your preferences to suggest new movies and shows
-            you'll love.
-          </p>
+        <div>
+          {loading ? (
+            <p>✨ Analyzing your favorites...</p>
+          ) : recommendations.length > 0 ? (
+          <div>
+            {recommendations.map((r) => (
+            <div key={r.title}>
+              <h4>{r.title}</h4>
+              <p>{r.reason}</p>
+          </div>
+        ))}
+        </div>
+      ) : (
+      <button onClick={generateRecommendations}>
+          Generate Smart Recommendations
+      </button>
+      )}
+      </div>
+
         </div>
       </div>
 
