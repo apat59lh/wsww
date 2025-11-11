@@ -439,7 +439,7 @@ const generateRecommendations = async () => {
                 No movies ranked yet
               </div>
             ) : (
-              movieRankings.map((movie, index) => (
+              movieRankings.sort((a, b) => b.displayRating - a.displayRating).map((movie, index) => ( 
                 <div
                   key={movie.id}
                   style={{
@@ -512,7 +512,7 @@ const generateRecommendations = async () => {
                 No shows ranked yet
               </div>
             ) : (
-              showRankings.map((show, index) => (
+              showRankings.sort((a, b) => b.displayRating - a.displayRating).map((show, index) => (
                 <div
                   key={show.id}
                   style={{
